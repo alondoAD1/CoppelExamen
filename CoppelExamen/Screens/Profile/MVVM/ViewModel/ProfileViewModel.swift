@@ -24,10 +24,8 @@ class ProfileViewModel {
     }
     
     func userAccount() async throws  {
-        
-        let endPoint = NetworkConstants.userAccount.appending(NetworkConstants.apiKey).appending(NetworkConstants.sessionPost).appending(UserDefaults.standard.string(forKey: UserDefaultConstants.sessionIDLogin) ?? String())
         do {
-            let data = try await NetworkingService.request(endPoint: endPoint, model: ModelLogin.self, method: .GET)
+            let data = try await NetworkingService.request(endPoint: NetworkConstants.endPoint.AccountData(id: UserDefaults.standard.string(forKey: UserDefaultConstants.sessionIDLogin) ?? String()).url, model: ModelLogin.self, method: .GET)
             dataLogin = [data]
         } catch {
             throw error

@@ -131,7 +131,7 @@ internal class DashboardCollectionViewCell: UICollectionViewCell {
             imagePelicula.image = UIImage.Icon.imageEmpty.image
             return
         }
-        let urlString = NetworkConstants.imagePath.appending(url)
+        let urlString = NetworkConstants.endPoint.LoadImages(urlPath: url).url
         imagePelicula.loadimagenUsandoCacheConURLString(urlString: urlString)
     }
     

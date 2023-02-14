@@ -9,8 +9,6 @@ import UIKit
 
 class DashboardPresenter: ViewToPresenterDashboardProtocol {
 
-    
-
     var movies = [[DashboardCustomModel]]()
     var rowsToDipslay = [ResultCustomModel]()
     var arrFavorites = [ResultCustomModel]()
@@ -27,11 +25,9 @@ class DashboardPresenter: ViewToPresenterDashboardProtocol {
         do {
             guard let myFavorite = try await interactor?.getMyFavorite() else { return }
             arrCompareFavorite = myFavorite
-//            UserDefaults.standard.removeObject(forKey: UserDefaultConstants.favoriteList)
 
         } catch {
             view?.hideActivity()
-            view?.onFetchMoviewsFailure(error: String(describing: error).appending("- Error al obtener las peliculas"))
         }
     }
     
@@ -39,22 +35,14 @@ class DashboardPresenter: ViewToPresenterDashboardProtocol {
         movies.removeAll()
         view?.showActivity()
         do {
-            guard let popular = try await interactor?.getTV_Popular() else { return }
-            guard let topRated = try await interactor?.getTV_TopRated() else { return }
-            guard let onTv = try await interactor?.getTV_OnTv() else { return }
-            guard let airToday = try await interactor?.getTV_AringToday() else { return }
+            await interactor?.getTV_Popular()
+            await interactor?.getTV_TopRated()
+            await interactor?.getTV_OnTv()
+            await interactor?.getTV_AringToday()
             
-            movies.append(popular)
-            movies.append(topRated)
-            movies.append(onTv)
-            movies.append(airToday)
-            rowsToDipslay = movies[0][0].results!
-//            dataUserAccount = userAccount
+
             view?.hideActivity()
             view?.onFetchMoviesSuccess()
-        } catch {
-            view?.hideActivity()
-            view?.onFetchMoviewsFailure(error: String(describing: error).appending(UIConstants.Dashboard.Errors.error))
         }
     }
     
@@ -73,6 +61,51 @@ class DashboardPresenter: ViewToPresenterDashboardProtocol {
     }
     
 }
+
+//MARK: Api - Success
+extension DashboardPresenter: InteractorToPresenterDashboardProtocol {
+    func fetchTVPopularSuccess(data: [DashboardCustomModel]) {
+        movies.append(data)
+        rowsToDipslay = movies[0][0].results!
+    }
+    
+    func fetchTVTopRatedSuccess(data: [DashboardCustomModel]) {
+        movies.append(data)
+    }
+    
+    func fetchTVOnTVSuccess(data: [DashboardCustomModel]) {
+        movies.append(data)
+    }
+    
+    func fetchTVAringTodaySuccess(data: [DashboardCustomModel]) {
+        movies.append(data)
+    }
+    
+}
+
+//MARK: Api - Error
+extension DashboardPresenter {
+    func fetchTVPopularFailure(error: String) {
+        view?.hideActivity()
+        view?.onFetchMoviewsFailure(error: String(describing: error).appending(UIConstants.Dashboard.Errors.error))
+    }
+    
+    func fetchTVTopRatedFailure(error: String) {
+        view?.hideActivity()
+        view?.onFetchMoviewsFailure(error: String(describing: error).appending(UIConstants.Dashboard.Errors.error))
+    }
+    
+    func fetchTVOnTvFailure(error: String) {
+        view?.hideActivity()
+        view?.onFetchMoviewsFailure(error: String(describing: error).appending(UIConstants.Dashboard.Errors.error))
+    }
+    
+    func fetchTVAiringTodayFailure(error: String) {
+        view?.hideActivity()
+        view?.onFetchMoviewsFailure(error: String(describing: error).appending(UIConstants.Dashboard.Errors.error))
+    }
+}
+
 
 //MARK: Config CollectionView
 extension DashboardPresenter {
@@ -120,28 +153,6 @@ extension DashboardPresenter {
     }
 }
 
-//MARK: Fetch Info
-extension DashboardPresenter: InteractorToPresenterDashboardProtocol {
-    func fetchMoviewSuccess(movies: [[DashboardCustomModel]]) {
-        view?.hideActivity()
-        view?.onFetchMoviesSuccess()
-    }
-    
-    func fetchMoviewFailure(error: String) {
-        view?.hideActivity()
-        view?.onFetchMoviewsFailure(error: String(describing: error).appending(UIConstants.Dashboard.Errors.error))
-    }
-    
-    func getMovieDetailSuccess(_ detail: DashboardCustomModel) {
-//        router?.pushToMoviewDetail(on: view,
-//                                   with: detail)
-    }
-    
-    func getMoviewDetailFailure() {
-        view?.hideActivity()
-    }
-}
-
 //MARK: ActionTap
 extension DashboardPresenter: DashboardCVCellProtocol {
     
@@ -163,6 +174,7 @@ extension DashboardPresenter: DashboardCVCellProtocol {
         }
         
         UserDefaults.standard.set(encodedReloadContacts, forKey: UserDefaultConstants.favoriteList)
+        UserDefaults.standard.synchronize()
 
     }
 

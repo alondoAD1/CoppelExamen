@@ -110,7 +110,20 @@ public struct FavoriteModel: Codable {
     let name, originalName: String
     let isFavorite: Bool?
     
-    public init(posterPath: String? = String(), popularity: Double = Double(), id: Int = Int(), backdropPath: String? = String(), voteAverage: Double = Double(), overview: String = String(), firstAirDate: String = String(), originCountry: [String] = [String()], genreIDS: [Int] = [Int()], originalLanguage: String = String(), voteCount: Int = Int(), name: String = String(), originalName: String = String(), isFavorite: Bool? = Bool()) {
+    public init(posterPath: String? = String(),
+                popularity: Double = Double(),
+                id: Int = Int(),
+                backdropPath: String? = String(),
+                voteAverage: Double = Double(),
+                overview: String = String(),
+                firstAirDate: String = String(),
+                originCountry: [String] = [String()],
+                genreIDS: [Int] = [Int()],
+                originalLanguage: String = String(),
+                voteCount: Int = Int(),
+                name: String = String(),
+                originalName: String = String(),
+                isFavorite: Bool? = Bool()) {
         self.posterPath = posterPath
         self.popularity = popularity
         self.id = id

@@ -35,7 +35,8 @@ class DashboardRouter: PresenterToRouterDashboardProtocol {
     }
 
     func pushToMoviewDetail(on view: PresenterToViewDashboardProtocol?, with movie: ResultCustomModel, favoriteList: [FavoriteModel]) {
-        let detailViewController = DetailViewController(data: movie)
+        let detailViewController = DetailViewController(data: movie,
+                                                        dataFavorite: favoriteList)
         view?.getNavigation().pushViewController(detailViewController, animated: true)
     }
     

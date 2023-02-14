@@ -35,13 +35,14 @@ enum NetworkError: String, Error {
 class NetworkingService {
     
     public static var shared: NetworkingService = NetworkingService()
-        
+    private static let baseURL = "https://api.themoviedb.org/3/"
+    
     static func request<T: Decodable>(endPoint: String,
                                parameters: [String: Any]? = nil,
                                model: T.Type,
                                method: HTTPMethod) async throws -> T {
         
-        guard let url = URL(string: NetworkConstants.baseURL + endPoint) else {
+        guard let url = URL(string: baseURL + endPoint) else {
             throw NetworkError.invalidURL
         }
         var json: [String: Any] = [:]

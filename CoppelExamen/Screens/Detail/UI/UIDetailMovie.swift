@@ -7,11 +7,13 @@
 
 import UIKit
 import AVFoundation
+import SafariServices
 
 class UIDetailMovie {
     
     var screenSize = UIScreen.main.bounds.size
-
+    var player: AVPlayer?
+    
     lazy var scrollViewDetaill: UIScrollView = create {
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
@@ -74,7 +76,6 @@ class UIDetailMovie {
     lazy var viewReproductor: UIView = create {
         $0.backgroundColor = .clear
         $0.layer.cornerRadius = 20
-        $0.clipsToBounds = true
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
     
@@ -102,9 +103,9 @@ class UIDetailMovie {
         self.scrollViewDetaill.addSubview(viewReproductor)
         self.scrollViewDetaill.addSubview(overview)
         
-        self.viewReproductor.addSubview(imagenReproductor)
-        self.viewReproductor.addSubview(imgReproducir)
-        self.imageBackgroundPath.alpha = 0.35
+//        self.viewReproductor.addSubview(imagenReproductor)
+//        self.viewReproductor.addSubview(imgReproducir)
+//        self.imageBackgroundPath.alpha = 0.35
 
         NSLayoutConstraint.activate([
             scrollViewDetaill.topAnchor.constraint(equalTo: view.topAnchor),
@@ -144,15 +145,15 @@ class UIDetailMovie {
             viewReproductor.rightAnchor.constraint(equalTo: scrollViewDetaill.safeAreaLayoutGuide.rightAnchor, constant: -15),
             viewReproductor.heightAnchor.constraint(equalToConstant: 250),
             
-            imagenReproductor.topAnchor.constraint(equalTo: viewReproductor.topAnchor),
-            imagenReproductor.leftAnchor.constraint(equalTo: viewReproductor.leftAnchor),
-            imagenReproductor.rightAnchor.constraint(equalTo: viewReproductor.rightAnchor),
-            imagenReproductor.bottomAnchor.constraint(equalTo: viewReproductor.bottomAnchor),
-
-            imgReproducir.centerXAnchor.constraint(equalTo: viewReproductor.centerXAnchor),
-            imgReproducir.centerYAnchor.constraint(equalTo: viewReproductor.centerYAnchor),
-            imgReproducir.heightAnchor.constraint(equalToConstant: 150),
-            imgReproducir.widthAnchor.constraint(equalToConstant: 150),
+//            imagenReproductor.topAnchor.constraint(equalTo: viewReproductor.topAnchor),
+//            imagenReproductor.leftAnchor.constraint(equalTo: viewReproductor.leftAnchor),
+//            imagenReproductor.rightAnchor.constraint(equalTo: viewReproductor.rightAnchor),
+//            imagenReproductor.bottomAnchor.constraint(equalTo: viewReproductor.bottomAnchor),
+//
+//            imgReproducir.centerXAnchor.constraint(equalTo: viewReproductor.centerXAnchor),
+//            imgReproducir.centerYAnchor.constraint(equalTo: viewReproductor.centerYAnchor),
+//            imgReproducir.heightAnchor.constraint(equalToConstant: 150),
+//            imgReproducir.widthAnchor.constraint(equalToConstant: 150),
                         
             overview.topAnchor.constraint(equalTo: viewReproductor.bottomAnchor, constant: 20),
             overview.leftAnchor.constraint(equalTo: scrollViewDetaill.safeAreaLayoutGuide.leftAnchor, constant: 15),
@@ -164,10 +165,24 @@ class UIDetailMovie {
 
         }
     }
+    
+    func loadVideo(navigation: UINavigationController, id: String) {
+        if let url = URL(string: id) {
+//            player = AVPlayer(url: url)
+//            let playerLayer = AVPlayerLayer(player: player)
+//            viewReproductor.layer.addSublayer(playerLayer)
+//            playerLayer.frame = CGRect(x: 0, y: 0, width: 250, height: 250)
+//            playerLayer.videoGravity = .resizeAspectFill
+//            player?.play()
+            let safariViewControllerObject = SFSafariViewController(url: url)
+            
+            navigation.present(safariViewControllerObject, animated: true, completion: nil)
+        }
+    }
 
     func setData(data: ResultCustomModel) {
-        let urlbackdrop = NetworkConstants.imagePath.appending(data.backdropPath ?? String())
-        let urlpost = NetworkConstants.imagePath.appending(data.posterPath ?? String())
+        let urlbackdrop = NetworkConstants.endPoint.LoadImages(urlPath: data.backdropPath ?? "").url
+        let urlpost = NetworkConstants.endPoint.LoadImages(urlPath: data.posterPath ?? "").url
                    
         imageBackgroundPath.loadimagenUsandoCacheConURLString(urlString: urlbackdrop)
         imagePosterPath.loadimagenUsandoCacheConURLString(urlString: urlpost)

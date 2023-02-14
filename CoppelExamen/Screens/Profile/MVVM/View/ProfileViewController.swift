@@ -22,7 +22,7 @@ class ProfileViewController: UIViewController {
         view.backgroundColor = UIColor(colorIdentifier: .background)
         uiProfile.collectionView.delegate = self
         uiProfile.collectionView.dataSource = self
-        uiProfile.setImageUrl(imagenURL: NetworkConstants.myImageProfile)
+        uiProfile.setImageUrl(imagenURL: NetworkConstants.endPoint.ImageProfile.url)
         uiProfile.setConstraintLayout(view: view)
     }
     

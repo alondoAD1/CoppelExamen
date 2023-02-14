@@ -8,78 +8,115 @@
 import Foundation
 
 struct NetworkConstants {
-        
-    static var baseURL: String {
-        return "https://api.themoviedb.org/3/"
-    }
     
-    static var  getTokenMethod: String {
+    static private var  getTokenMethod: String {
         return "authentication/token/new"
     }
     
-    static var apiKey: String {
+    static private var apiKey: String {
         return "?api_key=7662169d6cde796d24b257cd0f8a268e"
     }
     
-    static var requestToken: String {
+    static private var requestToken: String {
         return ""
     }
     
-    static var loginMethod: String {
+    static private var loginMethod: String {
         return "authentication/token/validate_with_login"
     }
     
-    static var sessionID: String {
+    static private var sessionID: String {
         return "authentication/session/new"
     }
     
-    static var userAccount: String {
+    static private var userAccount: String {
         return "account"
     }
     
-    static var sessionPost: String {
+    static private var sessionPost: String {
         return "&session_id="
     }
     
-    static var popular: String {
+    static private var popular: String {
         return "tv/popular"
     }
     
-    static var tv: String {
+    static private var tv: String {
         return "movie/"
     }
     
-    static var videos: String {
+    static private var videos: String {
         return "/videos"
     }
     
-    static var topRated: String {
+    static private var topRated: String {
         return "tv/top_rated"
     }
     
-    static var onTheAir: String {
+    static private var onTheAir: String {
         return "tv/on_the_air"
     }
     
-    static var airingToday: String {
+    static private var airingToday: String {
         return "tv/airing_today"
     }
     
-    static var lenguaje: String {
+    static private var lenguaje: String {
         return "&language=en-US"
     }
     
-    static var configApi: String {
+    static private var configApi: String {
         return "&language=en-US&page="
     }
     
-    static var imagePath: String {
+    static private var imagePath: String {
         return "https://image.tmdb.org/t/p/w300"
     }
 
-    static var myImageProfile: String {
+    static private var myImageProfile: String {
         return "https://www.themoviedb.org/t/p/w150_and_h150_face/zuUrxOM7ywKWAEcJB02DcbQEccS.jpg"
     }
     
-
+    
+    enum endPoint {
+        case TVPopular(nextPage: String)
+        case TVRated(nextPage: String)
+        case TVOntv(nextPage: String)
+        case TVAirToday(nextPage: String)
+        case AccountData(id: String)
+        case MyFavorite
+        case SessionID
+        case LoginToken
+        case DataLogin
+        case ImageProfile
+        case LoadImages(urlPath: String)
+        
+        var url: String {
+            switch self {
+            case .TVPopular(let page):
+                return popular.appending(apiKey).appending(configApi).appending(page)
+            case .TVRated(let page):
+                return topRated.appending(apiKey).appending(configApi).appending(page)
+            case .TVOntv(let page):
+                return onTheAir.appending(apiKey).appending(configApi).appending(page)
+            case .TVAirToday(let page):
+                return airingToday.appending(apiKey).appending(configApi).appending(page)
+            case .AccountData(let id):
+                return userAccount.appending(apiKey).appending(sessionPost).appending(id)
+            case .MyFavorite:
+                return "urlFavorite"
+            case .SessionID:
+                return sessionID.appending(apiKey)
+            case .LoginToken:
+                return loginMethod.appending(apiKey)
+            case .DataLogin:
+                return getTokenMethod.appending(apiKey)
+            case .ImageProfile:
+                return myImageProfile
+            case .LoadImages(let url):
+                return imagePath.appending(url)
+            }
+        }
+    }
+    
 }

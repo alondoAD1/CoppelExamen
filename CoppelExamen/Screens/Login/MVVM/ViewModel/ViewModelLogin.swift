@@ -21,9 +21,8 @@ class ViewModelLogin {
                       username: String,
                       password: String,
                       completion: @escaping (Bool, String) -> Void) async throws {
-        let endPoint = NetworkConstants.getTokenMethod.appending(NetworkConstants.apiKey)
         do {
-            let data = try await NetworkingService.request(endPoint: endPoint, model: baseServiceModel.self, method: .GET)
+            let data = try await NetworkingService.request(endPoint: NetworkConstants.endPoint.DataLogin.url, model: baseServiceModel.self, method: .GET)
             try await loginToken(requestToken: data.requestToken, username: username, password: password, loader: loader, completion: completion)
         } catch {
             completion(false, NetworkError.user_pass.rawValue)
@@ -47,9 +46,8 @@ class ViewModelLogin {
                           "username": username,
                           "password": password]
         
-        let endPoint = NetworkConstants.loginMethod.appending(NetworkConstants.apiKey)
         do {
-            let data = try await NetworkingService.request(endPoint: endPoint, parameters: parameters, model: baseServiceModel.self, method: .POST)
+            let data = try await NetworkingService.request(endPoint: NetworkConstants.endPoint.LoginToken.url, parameters: parameters, model: baseServiceModel.self, method: .POST)
             try await self.sessionID(requestToken: data.requestToken, loader: loader, completion: completion)
         } catch {
             completion(false, error.localizedDescription)
@@ -62,9 +60,8 @@ class ViewModelLogin {
     func sessionID(requestToken: String,
                    loader: UIAlertController,
                    completion: @escaping (Bool, String) -> Void) async throws  {
-        let endPoint = NetworkConstants.sessionID.appending(NetworkConstants.apiKey)
         do {
-            let data = try await NetworkingService.request(endPoint: endPoint, parameters: ["request_token": requestToken], model: objSessionIDLoginModel.self, method: .POST)
+            let data = try await NetworkingService.request(endPoint: NetworkConstants.endPoint.SessionID.url, parameters: ["request_token": requestToken], model: objSessionIDLoginModel.self, method: .POST)
             try await userAccount(sessionID: data.sessionid, loader: loader, completion: completion)
         } catch {
             completion(false, error.localizedDescription)
@@ -77,10 +74,8 @@ class ViewModelLogin {
     func userAccount(sessionID: String,
                      loader: UIAlertController,
                      completion: @escaping (Bool, String) -> Void) async throws  {
-        
-        let endPoint = NetworkConstants.userAccount.appending(NetworkConstants.apiKey).appending(NetworkConstants.sessionPost).appending(sessionID)
         do {
-            let data = try await NetworkingService.request(endPoint: endPoint, model: ModelLogin.self, method: .GET)
+            let data = try await NetworkingService.request(endPoint: NetworkConstants.endPoint.AccountData(id: sessionID).url, model: ModelLogin.self, method: .GET)
             UserDefaults.standard.set(data.id, forKey: UserDefaultConstants.userIDKeyLogin)
             UserDefaults.standard.set(sessionID, forKey: UserDefaultConstants.sessionIDLogin)
             completion(true, String())

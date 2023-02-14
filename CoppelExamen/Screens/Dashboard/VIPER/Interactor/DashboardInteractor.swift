@@ -11,43 +11,45 @@ class DashboardInteractor: PresenterToInteractorDashboardProtocol {
 
     weak var presenter: InteractorToPresenterDashboardProtocol?
 
-    func getTV_Popular() async throws -> [DashboardCustomModel] {
-        let endPoint = NetworkConstants.popular.appending(NetworkConstants.apiKey).appending(NetworkConstants.configApi).appending("1")
+    func getTV_Popular() async {
         do {
-            let data = try await NetworkingService.request(endPoint: endPoint, model: DashboardCustomModel.self, method: .GET)
-            return [data]
-        } catch { throw error }
+            let data = try await NetworkingService.request(endPoint: NetworkConstants.endPoint.TVPopular(nextPage: "1").url, model: DashboardCustomModel.self, method: .GET)
+            presenter?.fetchTVPopularSuccess(data: [data])
+        } catch {
+            presenter?.fetchTVPopularFailure(error: error.localizedDescription)
+        }
     }
     
-    func getTV_TopRated() async throws -> [DashboardCustomModel] {
-        let endPoint = NetworkConstants.topRated.appending(NetworkConstants.apiKey).appending(NetworkConstants.configApi).appending("1")
+    func getTV_TopRated() async {
         do {
-            let data = try await NetworkingService.request(endPoint: endPoint, model: DashboardCustomModel.self, method: .GET)
-            return [data]
-        } catch { throw error }
-                
+            let data = try await NetworkingService.request(endPoint: NetworkConstants.endPoint.TVRated(nextPage: "1").url, model: DashboardCustomModel.self, method: .GET)
+            presenter?.fetchTVPopularSuccess(data: [data])
+        } catch {
+            presenter?.fetchTVTopRatedFailure(error: error.localizedDescription)
+        }
     }
     
-    func getTV_OnTv() async throws -> [DashboardCustomModel] {
-        let endPoint = NetworkConstants.onTheAir.appending(NetworkConstants.apiKey).appending(NetworkConstants.configApi).appending("1")
+    func getTV_OnTv() async {
         do {
-            let data = try await NetworkingService.request(endPoint: endPoint, model: DashboardCustomModel.self, method: .GET)
-            return [data]
-        } catch { throw error }
+            let data = try await NetworkingService.request(endPoint: NetworkConstants.endPoint.TVOntv(nextPage: "1").url, model: DashboardCustomModel.self, method: .GET)
+            presenter?.fetchTVPopularSuccess(data: [data])
+        } catch {
+            presenter?.fetchTVOnTvFailure(error: error.localizedDescription)
+        }
     }
     
-    func getTV_AringToday() async throws -> [DashboardCustomModel] {
-        let endPoint = NetworkConstants.airingToday.appending(NetworkConstants.apiKey).appending(NetworkConstants.configApi).appending("1")
+    func getTV_AringToday() async {
         do {
-            let data = try await NetworkingService.request(endPoint: endPoint, model: DashboardCustomModel.self, method: .GET)
-            return [data]
-        } catch { throw error }
+            let data = try await NetworkingService.request(endPoint: NetworkConstants.endPoint.TVAirToday(nextPage: "1").url, model: DashboardCustomModel.self, method: .GET)
+            presenter?.fetchTVPopularSuccess(data: [data])
+        } catch {
+            presenter?.fetchTVAiringTodayFailure(error: error.localizedDescription)
+        }
     }
     
     func getAccountData(sessionID: String) async throws -> [ModelLogin] {
-        let endPoint = NetworkConstants.userAccount.appending(NetworkConstants.apiKey).appending(NetworkConstants.sessionPost).appending(sessionID)
         do {
-            let data = try await NetworkingService.request(endPoint: endPoint, model: ModelLogin.self, method: .GET)
+            let data = try await NetworkingService.request(endPoint: NetworkConstants.endPoint.AccountData(id: sessionID).url, model: ModelLogin.self, method: .GET)
             return [data]
         } catch { throw error }
     }

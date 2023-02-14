@@ -89,7 +89,9 @@ struct NetworkConstants {
         case LoginToken
         case DataLogin
         case ImageProfile
-        case LoadImages(urlPath: String)
+        case LoadImages(id: String)
+        case LoadVideos(id: String)
+        case PlayVideo(id: String)
         
         var url: String {
             switch self {
@@ -115,6 +117,10 @@ struct NetworkConstants {
                 return myImageProfile
             case .LoadImages(let url):
                 return imagePath.appending(url)
+            case .LoadVideos(let id):
+                return "https://api.themoviedb.org/3/tv/\(String(id))/videos?api_key=7662169d6cde796d24b257cd0f8a268e&language=en-US&page=1"
+            case .PlayVideo(let url):
+                return "https://www.youtube.com/embed/".appending(url)
             }
         }
     }

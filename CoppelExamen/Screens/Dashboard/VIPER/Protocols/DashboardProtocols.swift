@@ -18,6 +18,8 @@ protocol ViewToPresenterDashboardProtocol: AnyObject {
 
     func numberOfRowsInSection() -> Int
     func didSelectRowAt(index: Int)
+    func didTapViewProfile()
+    func didLogOut()
     func setCell(collectionView: UICollectionView,
                  forRowAt indexPath: IndexPath) -> UICollectionViewCell
     

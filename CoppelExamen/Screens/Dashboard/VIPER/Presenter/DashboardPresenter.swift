@@ -40,7 +40,6 @@ class DashboardPresenter: ViewToPresenterDashboardProtocol {
             await interactor?.getTV_OnTv()
             await interactor?.getTV_AringToday()
             
-
             view?.hideActivity()
             view?.onFetchMoviesSuccess()
         }
@@ -48,11 +47,11 @@ class DashboardPresenter: ViewToPresenterDashboardProtocol {
     
     func refresh(index: Int) {
         switch index {
-        case 0:
+        case secctionType.popular.index:
             rowsToDipslay = movies[index][0].results!
-        case 1:
+        case secctionType.topRated.index:
             rowsToDipslay = movies[index][0].results!
-        case 2:
+        case secctionType.onTv.index:
             rowsToDipslay = movies[index][0].results!
         default:
             rowsToDipslay = movies[index][0].results!
@@ -66,7 +65,7 @@ class DashboardPresenter: ViewToPresenterDashboardProtocol {
 extension DashboardPresenter: InteractorToPresenterDashboardProtocol {
     func fetchTVPopularSuccess(data: [DashboardCustomModel]) {
         movies.append(data)
-        rowsToDipslay = movies[0][0].results!
+        rowsToDipslay = movies[secctionType.popular.index][0].results!
     }
     
     func fetchTVTopRatedSuccess(data: [DashboardCustomModel]) {
@@ -109,6 +108,7 @@ extension DashboardPresenter {
 
 //MARK: Config CollectionView
 extension DashboardPresenter {
+    
     func numberOfRowsInSection() -> Int {
         return rowsToDipslay.count
     }
@@ -120,13 +120,6 @@ extension DashboardPresenter {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         let screenSize = UIScreen.main.bounds
         return CGSize(width: screenSize.width/2, height: 260)
-    }
-
-    func didSelectRowAt(index: Int) {
-        router?.pushToMoviewDetail(on: view,
-                                   with: rowsToDipslay[index],
-                                   favoriteList: arrCompareFavorite)
-
     }
 
     func setCell(collectionView: UICollectionView, forRowAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -156,7 +149,27 @@ extension DashboardPresenter {
 //MARK: ActionTap
 extension DashboardPresenter: DashboardCVCellProtocol {
     
-    func tapFavorite(data: FavoriteModel) {
+    func didSelectRowAt(index: Int) {
+        router?.pushToMoviewDetail(on: view,
+                                   with: rowsToDipslay[index],
+                                   favoriteList: arrCompareFavorite)
+    }
+    
+    func didTapViewProfile() {
+        router?.pushToProfile(on: view,
+                              with: ModelLogin())
+    }
+    
+    func didLogOut() {
+        UserDefaults.standard.removeObject(forKey: UserDefaultConstants.favoriteList)
+        UserDefaults.standard.removeObject(forKey: UserDefaultConstants.sessionIDLogin)
+        UserDefaults.standard.removeObject(forKey: UserDefaultConstants.userIDKeyLogin)
+        DispatchQueue.main.async {
+            self.view?.getNavigation().pushViewController(LoginViewController(), animated: true)
+        }
+    }
+    
+    func didTapFavorite(data: FavoriteModel) {
         var reloadContacts: [FavoriteModel] = []
         let decoder = JSONDecoder()
         if let codedReloadContacts = UserDefaults.standard.value(forKey: UserDefaultConstants.favoriteList) as? Data {

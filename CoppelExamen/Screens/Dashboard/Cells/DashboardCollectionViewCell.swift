@@ -8,7 +8,7 @@
 import UIKit
 
 protocol DashboardCVCellProtocol: AnyObject {
-    func tapFavorite(data: FavoriteModel)
+    func didTapFavorite(data: FavoriteModel)
 }
 
 internal class DashboardCollectionViewCell: UICollectionViewCell {
@@ -131,14 +131,14 @@ internal class DashboardCollectionViewCell: UICollectionViewCell {
             imagePelicula.image = UIImage.Icon.imageEmpty.image
             return
         }
-        let urlString = NetworkConstants.endPoint.LoadImages(urlPath: url).url
+        let urlString = NetworkConstants.endPoint.LoadImages(id: url).url
         imagePelicula.loadimagenUsandoCacheConURLString(urlString: urlString)
     }
     
     func actionTap() {
         btnFavorite.addTapGesture { [weak self] in
             self?.btnFavorite.tintColor = .red
-            self?.delegate?.tapFavorite(data: self?.modelData ?? FavoriteModel())
+            self?.delegate?.didTapFavorite(data: self?.modelData ?? FavoriteModel())
         }
     }
     

@@ -41,7 +41,13 @@ class DashboardRouter: PresenterToRouterDashboardProtocol {
     }
     
     func pushToProfile(on view: PresenterToViewDashboardProtocol?, with profileData: ModelLogin) {
-
+        let profileViewController = ProfileViewController()
+        let navigationController = UINavigationController(rootViewController: profileViewController)
+        navigationController.modalPresentationStyle = .pageSheet
+        if let sheet = navigationController.sheetPresentationController {
+            sheet.detents = [.large()]
+        }
+        view?.getNavigation().present(navigationController, animated: true)
     }
     
     

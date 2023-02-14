@@ -8,7 +8,7 @@
 import UIKit
 import WebKit
 
-class DetailViewController: UIViewController {
+class DetailViewController: UIViewController, WKNavigationDelegate {
     
     var data: ResultCustomModel?
     var uiDetail: UIDetailMovie = UIDetailMovie()
@@ -44,22 +44,20 @@ class DetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         guard let data = self.data else { return }
-        uiDetail.loadTVVideo(idTV: String(data.id)) { url in
-            var mywkwebview: WKWebView?
-            let mywkwebviewConfig = WKWebViewConfiguration()
-
-            mywkwebviewConfig.allowsInlineMediaPlayback = true
-            mywkwebview = WKWebView(frame: self.view.frame, configuration: mywkwebviewConfig)
-
-            let myURL = URL(string: url)
-            let youtubeRequest = URLRequest(url: myURL!)
-
-            mywkwebview?.load(youtubeRequest)
-        }
-
-        uiDetail.loadVideo(navigation: navigationController!, id: "https://www.youtube.com/watch?v=\("u1DoR5-76Xc")")
         uiDetail.setData(data: data)
         uiDetail.setLayoutConstraint(view: view)
+        uiDetail.loadTVVideo(idTV: String(data.id))
+        uiDetail.viewReproductor.frame = uiDetail.viewReproductor.frame
+        uiDetail.viewReproductor.navigationDelegate = self
+
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        uiDetail.viewReproductor.stopLoading()
+        uiDetail.viewReproductor.configuration.userContentController.removeScriptMessageHandler(forName: "...")
+        uiDetail.viewReproductor.navigationDelegate = nil
+
     }
 
 }

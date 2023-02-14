@@ -84,31 +84,20 @@ extension DashboardViewController: UICollectionViewDelegate, UICollectionViewDat
 
 //MARK: ActionTap
 extension DashboardViewController: delegateUIDashboard {
+    
     func selectBtnMenuNavBar() {
         let alert = UIAlertController(title: String(), message: UIConstants.Dashboard.BottomAlert_Button_title, preferredStyle: .actionSheet)
         
-        alert.addAction(UIAlertAction(title: UIConstants.Dashboard.BottomAlert_Button_viewProfile, style: .default , handler:{ (UIAlertAction)in
-            let profileViewController = ProfileViewController()
-            let navigationController = UINavigationController(rootViewController: profileViewController)
-            navigationController.modalPresentationStyle = .pageSheet
-            if let sheet = navigationController.sheetPresentationController {
-                sheet.detents = [.large()]
-            }
-            self.present(navigationController, animated: true)
+        alert.addAction(UIAlertAction(title: UIConstants.Dashboard.BottomAlert_Button_viewProfile, style: .default , handler:{ (UIAlertAction) in
+            self.presenter?.didTapViewProfile()
         }))
         
         alert.addAction(UIAlertAction(title: UIConstants.Dashboard.BottomAlert_Button_myFavorite, style: .default , handler:{ (UIAlertAction) in
-//            let profileViewController = DetailViewController()
-//            self.navigationController?.pushViewController(profileViewController, animated: true)
+
         }))
         
         alert.addAction(UIAlertAction(title: UIConstants.Dashboard.BottomAlert_Button_logOut, style: .default , handler:{ (UIAlertAction) in
-            UserDefaults.standard.removeObject(forKey: UserDefaultConstants.favoriteList)
-            UserDefaults.standard.removeObject(forKey: UserDefaultConstants.sessionIDLogin)
-            UserDefaults.standard.removeObject(forKey: UserDefaultConstants.userIDKeyLogin)
-            DispatchQueue.main.async {
-                self.navigationController?.pushViewController(LoginViewController(), animated: true)
-            }
+            self.presenter?.didLogOut()
         }))
             
         alert.addAction(UIAlertAction(title: UIConstants.Dashboard.BottomAlert_Button_cancel, style: .cancel, handler:{ (UIAlertAction) in

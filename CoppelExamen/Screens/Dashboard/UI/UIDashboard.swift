@@ -7,6 +7,25 @@
 
 import UIKit
 
+enum secctionType: String, CaseIterable {
+    case popular = "Popular"
+    case topRated = "Top Rated"
+    case onTv = "On Tv"
+    case aringToday = "Aring Today"
+    
+    var index: Int {
+        var index = -1
+        let cases = Self.allCases
+        for (caseIndex, caseItem) in cases.enumerated() {
+            if caseItem.rawValue == self.rawValue {
+                index = caseIndex
+                break
+            }
+        }
+        return index
+    }
+}
+
 protocol delegateUIDashboard: AnyObject {
     func selectBtn(index: Int)
     func selectBtnMenuNavBar()
@@ -18,9 +37,9 @@ class UIDashboard {
     var screenSize = UIScreen.main.bounds.size
     
     lazy var seggmentButtons: UISegmentedControl = create {
-        for (index, value) in UIConstants.UIDashboard_Segment_title.enumerated() {
-            $0.insertSegment(withTitle: value, at: index, animated: true)
-            $0.tag = index
+        for value in secctionType.allCases {
+            $0.insertSegment(withTitle: value.rawValue, at: value.index, animated: false)
+            $0.tag = value.index
         }
         $0.selectedSegmentIndex = 0
         $0.addTarget(self, action: #selector(segmentAction(_:)), for: .valueChanged)

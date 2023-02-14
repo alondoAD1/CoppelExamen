@@ -6,13 +6,11 @@
 //
 
 import UIKit
-import AVFoundation
-import SafariServices
+import WebKit
 
 class UIDetailMovie {
     
     var screenSize = UIScreen.main.bounds.size
-    var player: AVPlayer?
     
     lazy var scrollViewDetaill: UIScrollView = create {
         $0.translatesAutoresizingMaskIntoConstraints = false
@@ -73,22 +71,23 @@ class UIDetailMovie {
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
     
-    lazy var viewReproductor: UIView = create {
-        $0.backgroundColor = .clear
+    lazy var viewReproductor: WKWebView = create {
+        $0.isUserInteractionEnabled = true
         $0.layer.cornerRadius = 20
+        $0.clipsToBounds = true
+        $0.backgroundColor = .black
+        $0.isOpaque = false
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
     
     lazy var imagenReproductor: UIImageView = create {
+        $0.contentMode = .scaleToFill
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
     
-    lazy var imgReproducir: UIButtonCustom = create {
-        $0.contentMode = .scaleToFill
-        $0.setImage(UIImage.Icon.play.image, for: .normal)
-        $0.tintColor = .white
-        $0.isUserInteractionEnabled = true
-        $0.isHidden = false
+    var imgReproducir: UIActivityIndicatorView = create {
+        $0.style = .large
+        $0.startAnimating()
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
 
@@ -103,9 +102,9 @@ class UIDetailMovie {
         self.scrollViewDetaill.addSubview(viewReproductor)
         self.scrollViewDetaill.addSubview(overview)
         
-//        self.viewReproductor.addSubview(imagenReproductor)
-//        self.viewReproductor.addSubview(imgReproducir)
-//        self.imageBackgroundPath.alpha = 0.35
+        self.viewReproductor.addSubview(imgReproducir)
+        self.viewReproductor.addSubview(imagenReproductor)
+
 
         NSLayoutConstraint.activate([
             scrollViewDetaill.topAnchor.constraint(equalTo: view.topAnchor),
@@ -145,44 +144,24 @@ class UIDetailMovie {
             viewReproductor.rightAnchor.constraint(equalTo: scrollViewDetaill.safeAreaLayoutGuide.rightAnchor, constant: -15),
             viewReproductor.heightAnchor.constraint(equalToConstant: 250),
             
-//            imagenReproductor.topAnchor.constraint(equalTo: viewReproductor.topAnchor),
-//            imagenReproductor.leftAnchor.constraint(equalTo: viewReproductor.leftAnchor),
-//            imagenReproductor.rightAnchor.constraint(equalTo: viewReproductor.rightAnchor),
-//            imagenReproductor.bottomAnchor.constraint(equalTo: viewReproductor.bottomAnchor),
-//
-//            imgReproducir.centerXAnchor.constraint(equalTo: viewReproductor.centerXAnchor),
-//            imgReproducir.centerYAnchor.constraint(equalTo: viewReproductor.centerYAnchor),
-//            imgReproducir.heightAnchor.constraint(equalToConstant: 150),
-//            imgReproducir.widthAnchor.constraint(equalToConstant: 150),
+            imagenReproductor.topAnchor.constraint(equalTo: viewReproductor.topAnchor),
+            imagenReproductor.leftAnchor.constraint(equalTo: viewReproductor.leftAnchor),
+            imagenReproductor.rightAnchor.constraint(equalTo: viewReproductor.rightAnchor),
+            imagenReproductor.bottomAnchor.constraint(equalTo: viewReproductor.bottomAnchor),
+
+            imgReproducir.centerXAnchor.constraint(equalTo: viewReproductor.centerXAnchor),
+            imgReproducir.centerYAnchor.constraint(equalTo: viewReproductor.centerYAnchor),
                         
             overview.topAnchor.constraint(equalTo: viewReproductor.bottomAnchor, constant: 20),
             overview.leftAnchor.constraint(equalTo: scrollViewDetaill.safeAreaLayoutGuide.leftAnchor, constant: 15),
             overview.rightAnchor.constraint(equalTo: scrollViewDetaill.safeAreaLayoutGuide.rightAnchor, constant: -15),
             overview.bottomAnchor.constraint(equalTo: scrollViewDetaill.bottomAnchor, constant: -20),
         ])
-        
-        imgReproducir.addTapGesture {
-
-        }
-    }
-    
-    func loadVideo(navigation: UINavigationController, id: String) {
-        if let url = URL(string: id) {
-//            player = AVPlayer(url: url)
-//            let playerLayer = AVPlayerLayer(player: player)
-//            viewReproductor.layer.addSublayer(playerLayer)
-//            playerLayer.frame = CGRect(x: 0, y: 0, width: 250, height: 250)
-//            playerLayer.videoGravity = .resizeAspectFill
-//            player?.play()
-            let safariViewControllerObject = SFSafariViewController(url: url)
-            
-            navigation.present(safariViewControllerObject, animated: true, completion: nil)
-        }
     }
 
     func setData(data: ResultCustomModel) {
-        let urlbackdrop = NetworkConstants.endPoint.LoadImages(urlPath: data.backdropPath ?? "").url
-        let urlpost = NetworkConstants.endPoint.LoadImages(urlPath: data.posterPath ?? "").url
+        let urlbackdrop = NetworkConstants.endPoint.LoadImages(id: data.backdropPath ?? "").url
+        let urlpost = NetworkConstants.endPoint.LoadImages(id: data.posterPath ?? "").url
                    
         imageBackgroundPath.loadimagenUsandoCacheConURLString(urlString: urlbackdrop)
         imagePosterPath.loadimagenUsandoCacheConURLString(urlString: urlpost)
@@ -193,35 +172,37 @@ class UIDetailMovie {
         overview.text = UIConstants.DetailMovie.Override.appending(data.overview)
     }
     
-    func loadTVVideo(idTV: String, completion: @escaping (String) -> Void) {
-        let videoUrl = "https://api.themoviedb.org/3/movie/\(String(idTV))/videos?api_key=7662169d6cde796d24b257cd0f8a268e&language=en-US&page=1"
-
-        URLSession.shared.dataTask(with: URLRequest(url: URL(string: videoUrl)!)) {
+    func loadTVVideo(idTV: String) {
+        URLSession.shared.dataTask(with: URLRequest(url: URL(string: NetworkConstants.endPoint.LoadVideos(id: idTV).url)!)) {
             (data, req, error) in
             do {
                 let result = try JSONDecoder().decode(MovieTrailer.self, from: data!)
 
-                DispatchQueue.main.async {
-                    for i in 0..<result.results.count{
-                        let type = result.results[i].type
-                        if type == "Trailer" {
-                            let imgUrlKey = result.results[0].key!
-                            let url = "https://i.ytimg.com/vi/\(imgUrlKey)/sddefault.jpg"
-//                            self.ytPlayer.load(withVideoId: imgUrlKey)
-
-                            self.imagenReproductor.loadimagenUsandoCacheConURLString(urlString: url)
-                            self.playTrailer(videoID: imgUrlKey, completion: completion)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    if result.results.count == 0 { self.removeLoder() } else {
+                        if let key = result.results[0].key {
+                            self.playTrailer(videoID: NetworkConstants.endPoint.PlayVideo(id: key).url)
                         }
                     }
                 }
             } catch {
-                
+                self.removeLoder()
             }
         }.resume()
     }
     
-    func playTrailer(videoID: String, completion: @escaping (String) -> Void) {
-        completion("https://www.youtube.com/watch?v=\(videoID)")
+    func playTrailer(videoID: String) {
+        DispatchQueue.main.async {
+            guard let url = URL(string: videoID) else { return }
+            var request = URLRequest(url: url)
+            self.viewReproductor.load(request)
+            self.removeLoder()
+        }
+    }
+    
+    func removeLoder() {
+        imgReproducir.stopAnimating()
+        imgReproducir.removeFromSuperview()
     }
     
 }

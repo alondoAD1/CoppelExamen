@@ -31,6 +31,7 @@ class DashboardPresenter: ViewToPresenterDashboardProtocol {
         }
     }
     
+    @MainActor
     func viewDidLoad() async {
         movies.removeAll()
         view?.showActivity()
@@ -48,13 +49,13 @@ class DashboardPresenter: ViewToPresenterDashboardProtocol {
     func refresh(index: Int) {
         switch index {
         case secctionType.popular.index:
-            rowsToDipslay = movies[index][0].results!
+            rowsToDipslay = movies[index][0].results ?? []
         case secctionType.topRated.index:
-            rowsToDipslay = movies[index][0].results!
+            rowsToDipslay = movies[index][0].results ?? []
         case secctionType.onTv.index:
-            rowsToDipslay = movies[index][0].results!
+            rowsToDipslay = movies[index][0].results ?? []
         default:
-            rowsToDipslay = movies[index][0].results!
+            rowsToDipslay = movies[index][0].results ?? []
         }
         view?.onFetchMoviesSuccess()
     }
@@ -65,7 +66,7 @@ class DashboardPresenter: ViewToPresenterDashboardProtocol {
 extension DashboardPresenter: InteractorToPresenterDashboardProtocol {
     func fetchTVPopularSuccess(data: [DashboardCustomModel]) {
         movies.append(data)
-        rowsToDipslay = movies[secctionType.popular.index][0].results!
+        rowsToDipslay = movies[secctionType.popular.index][0].results ?? []
     }
     
     func fetchTVTopRatedSuccess(data: [DashboardCustomModel]) {
